@@ -216,7 +216,7 @@ export default function BookingForm({ roomId, leaderName, leaderId }: { roomId: 
                 
                 <div className="space-y-2">
                   <Label className="text-zinc-400 text-xs tracking-widest uppercase">Purpose</Label>
-                  <Select onValueChange={(val) => form.setValue('purpose', val)} defaultValue={form.getValues('purpose')}>
+                  <Select onValueChange={(val) => form.setValue('purpose', val as string)} defaultValue={form.getValues('purpose')}>
                     <SelectTrigger className="bg-[#0B0C10] border-zinc-800 text-white rounded-xl h-12 focus:ring-[#4F8BFF]">
                       <SelectValue placeholder="Select purpose" />
                     </SelectTrigger>
