@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Rocket, Clock, Zap, LogOut } from 'lucide-react';
 import { logout } from '@/lib/actions/auth';
+import { CancelButton } from '@/components/booking/cancel-button';
 
 export default async function StudentDashboard() {
   const session = await auth();
@@ -94,10 +95,14 @@ export default async function StudentDashboard() {
                         {b.peopleCount} Founders
                       </div>
                       <div className={`px-3 py-1 rounded-full font-bold text-xs uppercase tracking-wider ${
-                        b.status === 'CONFIRMED' ? 'bg-indigo-500/20 text-indigo-400' : 'bg-zinc-800 text-zinc-500'
+                        b.status === 'CONFIRMED' ? 'bg-indigo-500/20 text-indigo-400' : 
+                        b.status === 'CANCELLED' ? 'bg-red-500/20 text-red-400' : 'bg-zinc-800 text-zinc-500'
                       }`}>
                         {b.status}
                       </div>
+                      {b.status === 'CONFIRMED' && (
+                         <CancelButton bookingId={b.id} />
+                      )}
                     </div>
                   </div>
                 ))}

@@ -117,3 +117,54 @@ export async function createBooking(roomId: string, data: any) {
     return { success: false, error: e.message || 'An error occurred during booking.' };
   }
 }
+
+export async function toggleEdicStatus(formData: FormData) {
+  const session = await auth();
+  if (!session?.user || session.user.role !== 'ADMIN') throw new Error('Not authorized');
+
+  const userId = formData.get('userId') as string;
+  
+  const currentMembership = await prisma.edicMembership.findUnique({
+    where: { userId }
+  });
+
+  if (currentMembership) {
+    await prisma.edicMembership.update({
+      where: { userId },
+      data: { status: currentMembership.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE' }
+    });
+  } else {
+    // If not exists, create as active
+    await prisma.edicMembership.create({
+      data: {
+        userId,
+        edicId: `EDIC-${userId.substring(0,6)}`,
+        status: 'ACTIVE'
+      }
+  }
+  revalidatePath('/admin/edic');
+}
+
+export async function cancelBooking(bookingId: string) {
+  const session = await auth();
+  if (!session?.user) throw new Error('Not authorized');
+
+  const booking = await prisma.booking.findUnique({
+    where: { id: bookingId }
+  });
+
+  if (!booking) throw new Error('Booking not found');
+
+  if (booking.groupLeaderId !== session.user.id && session.user.role !== 'ADMIN') {
+    throw new Error('Not authorized to cancel this booking');
+  }
+
+  await prisma.booking.update({
+    where: { id: bookingId },
+    data: { status: 'CANCELLED' }
+  });
+
+  revalidatePath('/dashboard');
+  revalidatePath('/admin/bookings');
+  revalidatePath('/');
+}

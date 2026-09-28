@@ -1,136 +1,130 @@
 import { prisma } from '@/lib/prisma';
-import { Card, CardContent } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
+import { toggleEdicStatus } from '@/lib/actions/booking';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Search, ListFilter, MoreVertical, Plus } from 'lucide-react';
-import { revalidatePath } from 'next/cache';
+import { Search, MoreVertical } from 'lucide-react';
 
-async function toggleEdicStatus(formData: FormData) {
-  'use server';
-  const userId = formData.get('userId') as string;
-  const currentStatus = formData.get('currentStatus') as string;
-  
-  if (!userId) return;
-
-  const newStatus = currentStatus === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE';
-  
-  await prisma.edicMembership.upsert({
-    where: { userId },
-    update: { status: newStatus },
-    create: {
-      userId,
-      status: newStatus,
-      edicId: `EDIC-NEW-${Math.floor(Math.random() * 10000)}`,
-    }
-  });
-
-  revalidatePath('/admin/edic');
-}
-
-export default async function EdicManagementPage() {
-  const students = await prisma.user.findMany({
-    where: { role: 'STUDENT' },
+export default async function AdminEdicPage() {
+  const users = await prisma.user.findMany({
     include: { edicMembership: true },
     orderBy: { name: 'asc' },
   });
 
   return (
-    <div className="space-y-6 max-w-5xl">
+    <div className="p-8">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900 tracking-tight">EDIC Members</h1>
-        <p className="text-gray-500 text-sm mt-1">Manage EDIC memberships and student roles</p>
-      </div>
-      
-      {/* Tabs */}
-      <div className="flex gap-6 border-b border-gray-200">
-        <button className="pb-3 text-sm font-medium text-gray-500 hover:text-gray-900">Organization</button>
-        <button className="pb-3 text-sm font-medium text-gray-500 hover:text-gray-900">Facilities</button>
-        <button className="pb-3 text-sm font-medium text-blue-600 border-b-2 border-blue-600">Users & Roles</button>
-        <button className="pb-3 text-sm font-medium text-gray-500 hover:text-gray-900">Financials</button>
-      </div>
-
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-        {/* Filters */}
-        <div className="p-4 border-b border-gray-100 flex items-center justify-between gap-4">
-          <div className="flex gap-3 flex-1">
-            <div className="relative max-w-xs w-full">
-              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-              <input 
-                type="text" 
-                placeholder="Search..." 
-                className="w-full pl-9 pr-4 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
+        <div className="flex justify-between items-start">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Settings</h1>
+            <p className="text-sm text-gray-500 mt-1">Manage your preferences and configure various options</p>
+            <div className="flex items-center gap-2 text-xs text-gray-400 mt-4">
+              <span>Home</span>
+              <span>/</span>
+              <span>Settings</span>
+              <span>/</span>
+              <span className="text-gray-900 font-medium">Users & Roles</span>
             </div>
-            <Button variant="outline" className="text-gray-600 gap-2 font-normal">
-              <ListFilter className="w-4 h-4" /> All Roles
-            </Button>
-            <Button variant="outline" className="text-gray-600 gap-2 font-normal">
-              Sort by
-            </Button>
           </div>
-          <Button className="bg-blue-600 hover:bg-blue-700 text-white gap-2 rounded-lg">
-            <Plus className="w-4 h-4" /> Add New User
-          </Button>
+          <div className="flex gap-4">
+            <Button variant="ghost" size="icon" className="text-gray-400"><Search className="w-5 h-5" /></Button>
+          </div>
         </div>
 
-        {/* Table */}
+        <div className="flex gap-6 mt-6 border-b border-gray-100">
+          <button className="text-sm font-medium text-gray-500 pb-3 hover:text-gray-900">Organization</button>
+          <button className="text-sm font-medium text-gray-500 pb-3 hover:text-gray-900">Facilities</button>
+          <button className="text-sm font-medium text-blue-600 border-b-2 border-blue-600 pb-3">Users & Roles</button>
+          <button className="text-sm font-medium text-gray-500 pb-3 hover:text-gray-900">Financials</button>
+          <button className="text-sm font-medium text-gray-500 pb-3 hover:text-gray-900">Integrations</button>
+        </div>
+      </div>
+
+      <div className="flex justify-between items-center mb-6">
+        <div className="relative w-64">
+          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+          <input 
+            type="text" 
+            placeholder="Search..." 
+            className="w-full pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+          />
+        </div>
+        <div className="flex gap-3">
+          <select className="border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-600 bg-white">
+            <option>All Roles</option>
+          </select>
+          <select className="border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-600 bg-white">
+            <option>Sort by</option>
+          </select>
+          <Button className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg px-4">+ Add New User</Button>
+        </div>
+      </div>
+
+      <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
         <Table>
           <TableHeader>
-            <TableRow className="bg-gray-50/50 hover:bg-gray-50/50 border-none">
-              <TableHead className="font-medium text-gray-500 h-10">Name</TableHead>
-              <TableHead className="font-medium text-gray-500 h-10">Department</TableHead>
-              <TableHead className="font-medium text-gray-500 h-10">Status</TableHead>
-              <TableHead className="font-medium text-gray-500 h-10 w-[50px]"></TableHead>
+            <TableRow className="bg-gray-50/50 border-b border-gray-100 hover:bg-gray-50/50">
+              <TableHead className="text-xs font-semibold text-gray-500 uppercase tracking-wider h-10 px-6">Name</TableHead>
+              <TableHead className="text-xs font-semibold text-gray-500 uppercase tracking-wider h-10 px-6">Role</TableHead>
+              <TableHead className="text-xs font-semibold text-gray-500 uppercase tracking-wider h-10 px-6">Assigned Locations</TableHead>
+              <TableHead className="text-xs font-semibold text-gray-500 uppercase tracking-wider h-10 px-6">Status</TableHead>
+              <TableHead className="w-10"></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {students.map((s, i) => {
-              const status = s.edicMembership?.status || 'NONE';
-              const isActive = status === 'ACTIVE';
-              // Cycle through some colors for the department pill just for the visual effect of the mockup
-              const colors = ['bg-green-100 text-green-700', 'bg-blue-100 text-blue-700', 'bg-purple-100 text-purple-700', 'bg-orange-100 text-orange-700'];
-              const colorClass = colors[i % colors.length];
+            {users.map(user => {
+              const isEdic = user.edicMembership?.status === 'ACTIVE';
+              // Determine pill color based on role
+              let roleColor = 'bg-blue-50 text-blue-600';
+              let roleName = 'Student';
+              if (user.role === 'ADMIN') {
+                 roleColor = 'bg-green-50 text-green-600';
+                 roleName = 'Admin';
+              } else if (isEdic) {
+                 roleColor = 'bg-blue-50 text-blue-600';
+                 roleName = 'Manager';
+              } else {
+                 roleColor = 'bg-orange-50 text-orange-600';
+                 roleName = 'Student';
+              }
 
               return (
-                <TableRow key={s.id} className="border-b border-gray-50 hover:bg-gray-50/50 group">
-                  <TableCell>
+                <TableRow key={user.id} className="border-b border-gray-50 hover:bg-gray-50/30">
+                  <TableCell className="px-6 py-4">
                     <div className="flex items-center gap-3">
-                      <Avatar className="h-9 w-9 border border-gray-100">
-                        <AvatarImage src={`https://api.dicebear.com/7.x/initials/svg?seed=${s.name}`} />
-                        <AvatarFallback>{s.name?.charAt(0)}</AvatarFallback>
+                      <Avatar className="w-8 h-8">
+                        <AvatarImage src={`https://api.dicebear.com/7.x/initials/svg?seed=${user.name}`} />
+                        <AvatarFallback className="bg-gray-100 text-gray-600 text-xs">{user.name?.substring(0,2)}</AvatarFallback>
                       </Avatar>
                       <div className="flex flex-col">
-                        <span className="font-medium text-gray-900">{s.name}</span>
-                        <span className="text-xs text-gray-500">{s.email}</span>
+                        <span className="font-semibold text-gray-900 text-sm">{user.name}</span>
+                        <span className="text-xs text-gray-500">{user.email}</span>
                       </div>
                     </div>
                   </TableCell>
-                  <TableCell>
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${colorClass}`}>
-                      {s.department || 'Student'}
+                  <TableCell className="px-6 py-4">
+                    <span className={`inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium ${roleColor}`}>
+                      {roleName}
                     </span>
                   </TableCell>
-                  <TableCell>
-                    <form action={toggleEdicStatus} className="flex items-center gap-3">
-                      <input type="hidden" name="userId" value={s.id} />
-                      <input type="hidden" name="currentStatus" value={status} />
-                      <button 
-                        type="submit" 
-                        className={`relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${isActive ? 'bg-blue-600' : 'bg-gray-200'}`}
-                        role="switch"
-                        aria-checked={isActive}
-                      >
-                        <span className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${isActive ? 'translate-x-4' : 'translate-x-0'}`} />
+                  <TableCell className="px-6 py-4 text-sm text-gray-500">
+                    {user.role === 'ADMIN' ? 'All Locations' : 'R&D Cell 414'}
+                  </TableCell>
+                  <TableCell className="px-6 py-4">
+                    <form action={toggleEdicStatus}>
+                      <input type="hidden" name="userId" value={user.id} />
+                      <button type="submit" className="flex items-center gap-3 cursor-pointer">
+                        <div className={`w-10 h-5 rounded-full relative transition-colors ${isEdic ? 'bg-blue-600' : 'bg-gray-200'}`}>
+                          <div className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white transition-transform ${isEdic ? 'translate-x-5' : ''}`} />
+                        </div>
+                        <span className={`text-sm ${isEdic ? 'text-gray-900 font-medium' : 'text-gray-400'}`}>
+                          {isEdic ? 'Active' : 'Inactive'}
+                        </span>
                       </button>
-                      <span className={`text-sm ${isActive ? 'text-gray-900' : 'text-gray-500'}`}>
-                        {isActive ? 'Active' : 'Inactive'}
-                      </span>
                     </form>
                   </TableCell>
-                  <TableCell>
-                    <button className="text-gray-400 hover:text-gray-600 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <TableCell className="px-6 py-4">
+                    <button className="text-gray-400 hover:text-gray-600">
                       <MoreVertical className="w-4 h-4" />
                     </button>
                   </TableCell>
@@ -139,16 +133,14 @@ export default async function EdicManagementPage() {
             })}
           </TableBody>
         </Table>
-        
-        {/* Pagination Footer */}
-        <div className="p-4 border-t border-gray-100 flex items-center justify-between text-sm text-gray-500">
-          <span>Showing 1-{students.length} of {students.length} users</span>
+        <div className="px-6 py-4 border-t border-gray-100 flex items-center justify-between bg-white">
+          <p className="text-sm text-gray-500">Showing 1-{users.length} of {users.length} users</p>
           <div className="flex gap-1">
-            <button className="px-3 py-1 bg-blue-600 text-white rounded-md">1</button>
-            <button className="px-3 py-1 hover:bg-gray-100 rounded-md">2</button>
-            <button className="px-3 py-1 hover:bg-gray-100 rounded-md">3</button>
-            <span className="px-2 py-1">...</span>
-            <button className="px-3 py-1 hover:bg-gray-100 rounded-md">Next</button>
+            <button className="w-8 h-8 flex items-center justify-center rounded border border-gray-200 text-sm font-medium bg-blue-600 text-white">1</button>
+            <button className="w-8 h-8 flex items-center justify-center rounded border border-gray-200 text-sm font-medium text-gray-600 hover:bg-gray-50">2</button>
+            <button className="w-8 h-8 flex items-center justify-center rounded border border-gray-200 text-sm font-medium text-gray-600 hover:bg-gray-50">3</button>
+            <span className="flex items-center px-1 text-gray-400">...</span>
+            <button className="px-3 h-8 flex items-center justify-center rounded border border-gray-200 text-sm font-medium text-gray-600 hover:bg-gray-50">Next</button>
           </div>
         </div>
       </div>
