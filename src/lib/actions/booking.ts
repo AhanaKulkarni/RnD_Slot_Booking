@@ -141,6 +141,7 @@ export async function toggleEdicStatus(formData: FormData) {
         edicId: `EDIC-${userId.substring(0,6)}`,
         status: 'ACTIVE'
       }
+    });
   }
   revalidatePath('/admin/edic');
 }
