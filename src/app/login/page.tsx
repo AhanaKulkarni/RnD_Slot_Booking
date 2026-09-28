@@ -1,6 +1,9 @@
 import { auth } from '@/auth';
 import { redirect } from 'next/navigation';
 import LoginForm from '@/components/auth/login-form';
+import { MapPin } from 'lucide-react';
+
+const neuRaised = "bg-[#e0e5ec] shadow-[8px_8px_16px_#c8d0e7,-8px_-8px_16px_#ffffff] rounded-2xl";
 
 export default async function LoginPage() {
   const session = await auth();
@@ -9,15 +12,23 @@ export default async function LoginPage() {
   }
 
   return (
-    <main className="flex items-center justify-center md:h-screen">
-      <div className="relative mx-auto flex w-full max-w-[400px] flex-col space-y-2.5 p-4 md:-mt-32">
-        <div className="flex h-20 w-full items-end rounded-lg bg-blue-900 p-3 md:h-36">
-          <div className="w-32 text-white md:w-36">
-            <h1 className="text-2xl font-bold">R&D Cell 414</h1>
-            <p className="text-sm">Booking System</p>
+    <main className="min-h-screen bg-[#e0e5ec] flex items-center justify-center font-sans text-slate-700 p-6">
+      <div className="w-full max-w-[450px] space-y-8">
+        
+        <div className="flex flex-col items-center justify-center text-center space-y-4">
+          <div className={`w-20 h-20 flex items-center justify-center ${neuRaised}`}>
+            <MapPin className="w-10 h-10 text-blue-500" />
+          </div>
+          <div>
+            <h1 className="text-3xl font-extrabold text-slate-800 tracking-tight">R&D Slot Booking</h1>
+            <p className="text-slate-500 font-medium">Secure Access Portal</p>
           </div>
         </div>
-        <LoginForm />
+
+        <div className={`p-8 md:p-10 ${neuRaised}`}>
+          <LoginForm />
+        </div>
+        
       </div>
     </main>
   );
