@@ -87,6 +87,7 @@ export async function createBooking(roomId: string, data: any) {
           bookingId,
           roomId,
           groupLeaderId: session.user.id!,
+          projectId: data.projectId,
           date: parsedDate,
           startTime: data.startTime,
           endTime: data.endTime,
@@ -97,10 +98,10 @@ export async function createBooking(roomId: string, data: any) {
           description: data.description,
           status: 'CONFIRMED',
           members: {
-            create: data.members.map((m: any) => ({
+            create: data.members?.map((m: any) => ({
               name: m.name,
               studentId: m.studentId,
-            }))
+            })) || []
           }
         }
       });

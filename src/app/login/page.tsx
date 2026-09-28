@@ -1,9 +1,7 @@
 import { auth } from '@/auth';
 import { redirect } from 'next/navigation';
 import LoginForm from '@/components/auth/login-form';
-import { MapPin } from 'lucide-react';
-
-const neuRaised = "bg-[#e0e5ec] shadow-[8px_8px_16px_#c8d0e7,-8px_-8px_16px_#ffffff] rounded-2xl";
+import { Rocket } from 'lucide-react';
 
 export default async function LoginPage() {
   const session = await auth();
@@ -12,20 +10,20 @@ export default async function LoginPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#e0e5ec] flex items-center justify-center font-sans text-slate-700 p-6">
-      <div className="w-full max-w-[450px] space-y-8">
+    <main className="min-h-screen bg-background flex items-center justify-center font-sans p-6">
+      <div className="w-full max-w-[420px] space-y-8">
         
         <div className="flex flex-col items-center justify-center text-center space-y-4">
-          <div className={`w-20 h-20 flex items-center justify-center ${neuRaised}`}>
-            <MapPin className="w-10 h-10 text-blue-500" />
+          <div className="w-16 h-16 flex items-center justify-center bg-brand-blue-light text-brand-blue rounded-2xl transform -rotate-12">
+            <Rocket className="w-8 h-8 transform rotate-12" />
           </div>
           <div>
-            <h1 className="text-3xl font-extrabold text-slate-800 tracking-tight">R&D Slot Booking</h1>
-            <p className="text-slate-500 font-medium">Secure Access Portal</p>
+            <h1 className="text-3xl font-extrabold text-navy tracking-tight">R&D Portal</h1>
+            <p className="text-slate-500 font-medium mt-1">Founder Authentication</p>
           </div>
         </div>
 
-        <div className={`p-8 md:p-10 ${neuRaised}`}>
+        <div className="premium-card p-8 md:p-10">
           <LoginForm />
         </div>
         
