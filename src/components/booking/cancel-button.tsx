@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { Button } from '@/components/ui/button';
 import { Loader2, XCircle } from 'lucide-react';
 import { cancelBooking } from '@/lib/actions/booking';
 
@@ -22,21 +21,19 @@ export function CancelButton({ bookingId }: { bookingId: string }) {
   };
 
   return (
-    <Button 
-      variant="ghost" 
-      size="sm" 
+    <button 
       onClick={handleCancel}
       disabled={isCanceling}
-      className="text-red-400 hover:text-red-300 hover:bg-red-500/10 h-8 px-3 rounded-full border border-red-500/20"
+      className="flex items-center gap-2 text-red-500 font-bold px-4 py-2 rounded-xl bg-[#e0e5ec] shadow-[4px_4px_8px_#c8d0e7,-4px_-4px_8px_#ffffff] hover:shadow-[inset_4px_4px_8px_#c8d0e7,inset_-4px_-4px_8px_#ffffff] transition-all disabled:opacity-50"
     >
       {isCanceling ? (
         <Loader2 className="w-4 h-4 animate-spin" />
       ) : (
         <>
-          <XCircle className="w-4 h-4 mr-1.5" />
+          <XCircle className="w-4 h-4" />
           Cancel
         </>
       )}
-    </Button>
+    </button>
   );
 }

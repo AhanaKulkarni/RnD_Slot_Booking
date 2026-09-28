@@ -1,158 +1,85 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Rocket, Zap, Users, Activity, CalendarDays } from 'lucide-react';
+import { ShieldCheck, LogIn, Calendar, Users, MapPin } from 'lucide-react';
+import { motion } from 'framer-motion';
 
-export default function HomeClient({ session, room, occupancySlots, formattedDate, prevDate, nextDate }: any) {
+const neuRaised = "bg-[#e0e5ec] shadow-[8px_8px_16px_#c8d0e7,-8px_-8px_16px_#ffffff] rounded-2xl";
+const neuPressed = "bg-[#e0e5ec] shadow-[inset_6px_6px_12px_#c8d0e7,inset_-6px_-6px_12px_#ffffff] rounded-2xl";
+
+export default function HomeClient() {
+  const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+
   return (
-    <div className="min-h-screen bg-[#0B0C10] text-zinc-100 flex flex-col selection:bg-cyan-500/30 font-sans relative overflow-x-hidden">
-      
-      {/* Background Gradient matching the image */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-[#1A183A] via-[#0B0C10] to-[#0B0C10] pointer-events-none" />
-
-      <header className="relative z-50 pt-8 pb-4">
-        <div className="max-w-6xl mx-auto px-6 flex justify-between items-center">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-[#4F8BFF] flex items-center justify-center">
-              <Rocket className="w-6 h-6 text-white" />
-            </div>
-            <div className="flex flex-col">
-              <h1 className="font-serif font-bold text-xl text-white tracking-wide leading-tight">THE FOUNDRY</h1>
-              <p className="text-[10px] text-[#4F8BFF] font-bold tracking-widest uppercase">R&D INCUBATOR</p>
-            </div>
+    <div className="min-h-screen bg-[#e0e5ec] text-slate-700 font-sans flex flex-col">
+      <header className="px-6 py-6 md:px-12 flex justify-between items-center z-10">
+        <div className="flex items-center gap-4">
+          <div className={`w-12 h-12 flex items-center justify-center ${neuRaised}`}>
+            <MapPin className="w-6 h-6 text-blue-500" />
           </div>
-          
-          <div>
-            {session?.user ? (
-              <Link href={session.user.role === 'ADMIN' ? '/admin/dashboard' : '/dashboard'}>
-                <Button className="bg-white text-black rounded-full px-8 py-2.5 h-auto font-medium hover:bg-zinc-200 transition-all">
-                  Dashboard
-                </Button>
-              </Link>
-            ) : (
-              <Link href="/login">
-                <Button className="bg-white text-black rounded-full px-8 py-2.5 h-auto font-medium hover:bg-zinc-200 transition-all">
-                  Founder Login
-                </Button>
-              </Link>
-            )}
-          </div>
+          <span className="text-xl font-bold tracking-wide text-slate-700">R&D Slot Booking</span>
         </div>
+        <Link href="/login">
+          <Button className={`text-slate-600 hover:text-blue-500 font-bold px-6 h-12 ${neuRaised} hover:shadow-[4px_4px_8px_#c8d0e7,-4px_-4px_8px_#ffffff] transition-all bg-[#e0e5ec] hover:bg-[#e0e5ec]`}>
+            <LogIn className="w-4 h-4 mr-2" /> Login
+          </Button>
+        </Link>
       </header>
 
-      <main className="flex-1 max-w-6xl mx-auto w-full px-6 py-12 relative z-10 flex flex-col md:flex-row gap-12 lg:gap-20 items-start">
+      <main className="flex-1 px-6 md:px-12 pb-20 pt-10 flex flex-col items-center">
         
-        {/* Left Side: Intro & Cards */}
-        <div className="w-full md:w-[40%] flex flex-col gap-10 sticky top-12">
-          <div className="pt-4">
-            <h2 className="text-[3.5rem] leading-[1.1] font-serif font-bold text-white mb-2">
-              Fuel Your <br />
-              <span className="text-[#6495ED]">Next Big Idea</span>
+        <div className="text-center max-w-3xl mx-auto space-y-6 mb-16">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className={`inline-flex items-center gap-2 px-6 py-3 font-semibold text-sm text-blue-600 mb-4 ${neuPressed}`}>
+            <ShieldCheck className="w-4 h-4" /> Official Room 414 Booking Portal
+          </motion.div>
+          <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="text-4xl md:text-6xl font-extrabold text-slate-800 leading-tight">
+            Reserve Your Space in the R&D Cell
+          </motion.h1>
+          <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="text-lg text-slate-500 max-w-xl mx-auto">
+            Check real-time availability and secure your team's slot in Room 414.
+          </motion.p>
+        </div>
+
+        {/* Live Availability Section */}
+        <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className={`w-full max-w-4xl p-8 md:p-12 ${neuRaised}`}>
+          <div className="flex flex-col md:flex-row justify-between items-center mb-10 gap-6">
+            <h2 className="text-2xl font-bold text-slate-700 flex items-center gap-3">
+              <Calendar className="text-blue-500" /> Availability Check
             </h2>
-            <p className="mt-6 text-zinc-400 text-base leading-relaxed max-w-[85%] font-serif">
-              Check live capacity and claim your sprint slots in The Foundry. Hard cap at 21 innovators.
-            </p>
+            <div className={`px-4 py-2 flex items-center gap-3 ${neuPressed}`}>
+              <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="bg-transparent border-none text-slate-700 font-medium focus:outline-none focus:ring-0" />
+            </div>
           </div>
 
-          <div className="flex flex-col gap-6">
-            {/* Timeline Card */}
-            <div className="bg-[#16161E] rounded-3xl p-6 shadow-2xl border border-white/5">
-              <div className="flex items-center gap-3 mb-6">
-                <CalendarDays className="text-[#4F8BFF] w-5 h-5" />
-                <h3 className="font-bold text-white font-serif tracking-wide text-lg">Timeline</h3>
-              </div>
-              
-              <div className="flex flex-col gap-4">
-                <div className="flex justify-between items-center bg-[#0B0C10] rounded-full px-4 py-3 border border-white/5">
-                  <Link href={`/?date=${prevDate}`} className="text-zinc-500 hover:text-white transition-colors">
-                    &larr;
-                  </Link>
-                  <span className="font-bold text-sm text-white">{formattedDate}</span>
-                  <Link href={`/?date=${nextDate}`} className="text-zinc-500 hover:text-white transition-colors">
-                    &rarr;
-                  </Link>
+          <div className="space-y-8">
+            {['10:00 - 12:00', '13:00 - 15:00', '15:00 - 17:00'].map((time, i) => (
+              <div key={time} className={`p-6 ${neuPressed} flex flex-col md:flex-row md:items-center justify-between gap-4`}>
+                <div className="flex items-center gap-4">
+                  <div className={`w-12 h-12 flex items-center justify-center font-bold text-blue-500 ${neuRaised}`}>
+                    {time.split(':')[0]}
+                  </div>
+                  <div>
+                    <div className="font-bold text-lg text-slate-700">{time}</div>
+                    <div className="text-sm text-slate-500">Session Window</div>
+                  </div>
                 </div>
-
-                <div className="flex items-center justify-between px-5 py-4 bg-[#1E1E28] rounded-2xl border border-white/5 mt-2">
-                  <span className="text-zinc-400 text-sm">Max Capacity</span>
-                  <div className="flex items-center gap-2">
-                    <Users className="w-4 h-4 text-[#4F8BFF]" />
-                    <span className="font-bold text-white">{room?.capacity || 21}</span>
+                
+                <div className="flex-1 max-w-xs w-full">
+                  <div className="flex justify-between text-xs font-bold mb-2">
+                    <span className="text-slate-500 uppercase tracking-wider">Occupancy</span>
+                    <span className="text-blue-600">{i === 0 ? '8' : i === 1 ? '20' : '4'} / 21</span>
+                  </div>
+                  <div className={`h-4 w-full rounded-full overflow-hidden ${neuPressed}`}>
+                    <div className={`h-full rounded-full ${i === 1 ? 'bg-orange-400' : 'bg-blue-500'}`} style={{ width: i === 0 ? '38%' : i === 1 ? '95%' : '19%' }} />
                   </div>
                 </div>
               </div>
-            </div>
-
-            {/* EDIC Member Card */}
-            {!session?.user && (
-              <div className="bg-[#16161E] p-8 rounded-3xl border border-white/5 text-center shadow-2xl">
-                <Zap className="w-8 h-8 text-[#FFD700] mx-auto mb-4" />
-                <h3 className="text-white font-bold font-serif text-xl mb-3">EDIC Member?</h3>
-                <p className="text-sm text-zinc-400 mb-8 font-serif px-4">
-                  Log in to book your launch slot and start building.
-                </p>
-                <Link href="/login" className="block w-full">
-                  <Button className="w-full bg-white text-black hover:bg-zinc-200 rounded-full font-bold py-6 text-base">
-                    Log In To Book
-                  </Button>
-                </Link>
-              </div>
-            )}
+            ))}
           </div>
-        </div>
+        </motion.div>
 
-        {/* Right Side: Timeline Slots */}
-        <div className="w-full md:w-[60%] flex flex-col gap-6 pt-4">
-          <div className="flex items-center gap-3 mb-2 px-2">
-            <Activity className="text-[#4F8BFF] w-5 h-5" />
-            <h3 className="font-bold text-white tracking-widest uppercase text-sm font-serif">LIVE AVAILABILITY</h3>
-          </div>
-
-          {occupancySlots.length > 0 ? (
-            <div className="flex flex-col gap-4">
-              {occupancySlots.map((slot: any, i: number) => (
-                <div 
-                  key={i} 
-                  className="flex items-center justify-between bg-[#1A1A24] rounded-2xl px-6 py-5 border border-white/5 hover:bg-[#1E1E2A] transition-colors"
-                >
-                  <div className="font-black text-white w-28 text-sm tracking-widest">
-                    {slot.startTime} <span className="text-zinc-600 font-normal mx-1">-</span> {slot.endTime}
-                  </div>
-                  
-                  <div className="flex-1 px-6">
-                    <div className="h-[2px] w-full bg-zinc-800 rounded-full overflow-hidden relative">
-                       <motion.div 
-                          initial={{ width: 0 }}
-                          animate={{ width: `${Math.min(100, (slot.occupancy / slot.capacity) * 100)}%` }}
-                          transition={{ duration: 1, delay: i * 0.05 }}
-                          className={`absolute top-0 left-0 h-full ${slot.isFull ? 'bg-red-500' : 'bg-[#4F8BFF]'}`}
-                        />
-                    </div>
-                  </div>
-
-                  <div className="w-28 text-right flex flex-col justify-center">
-                    {slot.isFull ? (
-                      <span className="text-red-400 font-bold text-xs tracking-wide uppercase">
-                        MAX CAPACITY
-                      </span>
-                    ) : (
-                      <>
-                        <span className="text-sm font-bold text-white whitespace-nowrap">{slot.available} Slots Open</span>
-                        <span className="text-[10px] font-medium text-zinc-500 uppercase tracking-wider mt-0.5">{slot.occupancy}/{slot.capacity} Active</span>
-                      </>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="p-12 text-center border border-dashed border-zinc-800 rounded-3xl bg-[#16161E]">
-              <p className="text-zinc-500 font-medium">No telemetry data found for this cycle.</p>
-            </div>
-          )}
-        </div>
       </main>
     </div>
   );
