@@ -34,9 +34,6 @@ export default async function DashboardCalendarPage() {
             className="bg-transparent text-navy font-bold"
             classNames={{
               day: "h-10 w-10 text-center rounded-lg hover:bg-slate-100 transition-colors font-medium focus:bg-brand-blue focus:text-white",
-              head_cell: "text-slate-400 font-bold w-10 h-10 uppercase text-xs tracking-widest",
-              nav_button: "hover:bg-slate-100 rounded-lg w-8 h-8 flex items-center justify-center transition-colors text-slate-500",
-              caption: "flex justify-between items-center mb-4 font-black text-navy uppercase tracking-widest px-2",
             }}
           />
         </div>

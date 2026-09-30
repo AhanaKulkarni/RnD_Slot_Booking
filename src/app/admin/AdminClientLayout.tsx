@@ -21,7 +21,7 @@ const navLinks = [
 export default function AdminClientLayout({ children, session }: { children: React.ReactNode, session: any }) {
   const pathname = usePathname();
 
-  const SidebarContent = () => (
+  const renderSidebar = () => (
     <div className="flex flex-col h-full bg-white">
       <div className="p-6">
         <h1 className="font-bold text-2xl text-gray-900 tracking-tight">Quixera</h1>
@@ -32,7 +32,6 @@ export default function AdminClientLayout({ children, session }: { children: Rea
         <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-4 px-2">MAIN</p>
         <nav className="space-y-1">
           {navLinks.map((link) => {
-            // Because our current routes differ from the mock slightly, I'll hardcode the "Users & Roles" equivalent as EDIC members.
             const isUsersAndRoles = link.name === 'Instructors' && pathname === '/admin/edic';
             const isActive = pathname === link.href || isUsersAndRoles;
             return (
@@ -86,7 +85,7 @@ export default function AdminClientLayout({ children, session }: { children: Rea
     <div className="min-h-screen bg-[#F4F5F7] flex text-sm font-sans">
       {/* Desktop Sidebar */}
       <aside className="hidden lg:flex w-64 bg-white border-r border-gray-200 flex-shrink-0 flex-col h-screen sticky top-0">
-        <SidebarContent />
+        {renderSidebar()}
       </aside>
 
       {/* Main Content Area */}
@@ -99,7 +98,7 @@ export default function AdminClientLayout({ children, session }: { children: Rea
                 <Menu className="w-6 h-6" />
               </SheetTrigger>
               <SheetContent side="left" className="p-0 w-64 bg-white border-r-gray-200">
-                <SidebarContent />
+                {renderSidebar()}
               </SheetContent>
             </Sheet>
             <h1 className="font-bold text-lg text-gray-900 tracking-tight">Quixera</h1>
