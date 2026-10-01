@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 import { auth } from '@/auth';
 import { redirect } from 'next/navigation';
 import BookingForm from '@/components/booking/booking-form';
@@ -64,3 +65,4 @@ export default async function BookPage() {
     </div>
   );
 }
+

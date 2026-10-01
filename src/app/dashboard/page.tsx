@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { redirect } from 'next/navigation';
@@ -172,3 +173,4 @@ function StatCard({ icon, title, value, trend }: { icon: React.ReactNode, title:
     </div>
   );
 }
+
